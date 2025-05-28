@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#pragma once
+
 struct CartesianTree {
     int n;
     int root;
@@ -150,22 +152,3 @@ struct CartesianTree {
         cout << "mask: " << bitset<30>(mask) << " -> " << mask << endl;
     }
 };
-
-
-int main() {
-    //CartesianTree ct(44452);
-    //ct.dbg();
-    
-    vector<int> a = {93,84,33,64,62,83,63,58};
-    CartesianTree ct(a);
-    ct.dbg();
-    int n = a.size();
-    auto all = ct.generate();
-    for (int i = 0; i < n; i++) {
-        for (int j = i; j < n; j++) {
-            cout << i << " " << j << " " << all[i][j] << endl;
-        }
-    }
-
-    return 0;
-}
