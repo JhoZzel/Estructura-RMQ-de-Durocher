@@ -227,7 +227,7 @@ struct Durocher {
     }
 
     void back(int i, int sa, int mask, int n) {
-        if (sa < 0) return;
+        if (sa < 0 or sa > n) return;
         if (i == 2 * n) {
             if (sa) return;
             CartesianTree ct(mask);

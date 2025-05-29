@@ -1,4 +1,10 @@
-#include <bits/stdc++.h>
+#include <iostream>     
+#include <vector>      
+#include <stack>      
+#include <bitset>    
+#include <cassert>  
+#include <cmath>   
+
 using namespace std;
 
 #pragma once
@@ -133,14 +139,14 @@ struct CartesianTree {
                 st.emplace(i);
             }
         }
+
         while(!st.empty()) {
             mask = (mask << 1) | 0;
             st.pop();
         }
 
-        for (int i = 0; i < n; i++) {
-            if (par[i] == -1) root = i;
-        }
+        for (int i = 0; i < n; i++) if (par[i] == -1) root = i;
+
         assert(root != -1);
     }
 
@@ -149,6 +155,6 @@ struct CartesianTree {
         for (int i = 0; i < n; i++) {
             cout << i << " : " << L[i] << " " << R[i] << " " << par[i] << endl; 
         }
-        cout << "mask: " << bitset<30>(mask) << " -> " << mask << endl;
+        cout << "mask: " << bitset<20>(mask) << " = " << mask << endl;
     }
 };
