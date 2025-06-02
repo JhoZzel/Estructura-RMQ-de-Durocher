@@ -1,5 +1,13 @@
-#include <bits/stdc++.h>
+#include <iostream>     
+#include <vector>      
+#include <stack>      
+#include <bitset>    
+#include <cassert>  
+#include <cmath>   
+
 using namespace std;
+
+#pragma once
 
 struct CartesianTree {
     int n;
@@ -131,14 +139,14 @@ struct CartesianTree {
                 st.emplace(i);
             }
         }
+
         while(!st.empty()) {
             mask = (mask << 1) | 0;
             st.pop();
         }
 
-        for (int i = 0; i < n; i++) {
-            if (par[i] == -1) root = i;
-        }
+        for (int i = 0; i < n; i++) if (par[i] == -1) root = i;
+
         assert(root != -1);
     }
 
@@ -147,129 +155,6 @@ struct CartesianTree {
         for (int i = 0; i < n; i++) {
             cout << i << " : " << L[i] << " " << R[i] << " " << par[i] << endl; 
         }
-        cout << "mask: " << bitset<30>(mask) << " -> " << mask << endl;
+        cout << "mask: " << bitset<20>(mask) << " = " << mask << endl;
     }
 };
-
-struct SparseTable {
-    vector<vector<int>> st;
- 
-    SparseTable(vector<int> &a) { // 0-indexed
-        int n = a.size();
-        int k = __lg(n) + 1;
-        st.resize(n, vector<int>(k));
-        for (int i = 0; i < n; i++) st[i][0] = a[i];
-        for (int p = 1, d = 1; 2 * d <= n; p++, d <<= 1) {
-            for (int i = 0; i + 2 * d <= n; i++) {
-                st[i][p] = min(st[i][p - 1], st[i + d][p - 1]);
-            }
-        }
-    }
-    
-    int query(int l, int r) {
-        if (l > r) return INT_MAX; 
-        int k = __lg(r - l + 1);
-        int d = (1 << k);
-        return min(st[l][k], st[r - d + 1][k]);
-    }
-};
-
-
-int lookup_table[10][10][10000];
-
-void back(int i, int sa, int mask, int n) {
-    if (sa < 0) return;
-    if (i == 2 * n) {
-        if (sa) return;
-        CartesianTree ct(mask);
-        vector<vector<int>> all = ct.generate();
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                lookup_table[i][j][mask] = all[i][j];
-            }
-        }
-        return;
-    }
-    back(i + 1, sa + 1, (mask << 1) + 1, n);
-    back(i + 1, sa - 1, (mask << 1) + 0, n);
-}  
-
-struct Block {
-    int off;
-    int mask;
-    Block () {}
-    Block (vector<int> &a, int x) : off(x) {
-        CartesianTree ct(a);
-        mask = ct.mask;
-    }
-    int query(int l, int r) {
-        return lookup_table[l][r][mask] + off;
-    }
-};
-
-int main() {
-    cin.tie(0) -> sync_with_stdio(0);
-
-    int n,q;
-    cin >> n >> q;
-    vector<int> a(n);
-    for (int &e : a) cin >> e;
-    
-    int k = max(1.0, round(0.5 * log(n) / log(4)));
-
-    back(0, 0, 0, k);
-
-    vector<int> b;
-    vector<int> id(n); 
-    vector<Block> blocks;
-    int i = 0, j = 0;
-    while(i < n) {
-        int mn = INT_MAX;
-        vector<int> v;
-        int off = i;
-        for (int z = 0; z < k; z++) {
-            if (i >= n) break;
-            id[i] = j;
-            mn = min(mn, a[i]);
-            v.push_back(a[i]);
-            i++;
-        }
-        b.push_back(mn);
-        blocks.push_back(Block(v, off));
-        j++;
-    }
-
-    SparseTable st(b);
-    
-    auto query = [&](int l, int r) -> int {
-        int id_l = id[l];
-        int id_r = id[r];
-        if (id_l == id_r) {
-            int s = id_l * k;
-            l -= s; r -= s;
-            assert(l < k and r < k);
-            return a[blocks[id_l].query(l, r)];
-        }
-        else {
-            int mn = st.query(id_l + 1, id_r - 1);
-            int s1 = id_l * k;
-            int s2 = id_r * k;
-            l -= s1; r -= s2;
-            assert(l < k and r < k);
-            mn = min(mn, a[blocks[id_l].query(l, k - 1)]);
-            mn = min(mn, a[blocks[id_r].query(0, r)]);
-            return mn;
-        }
-    };
-
-    while(q--) {
-        int l,r;
-        cin >> l >> r;
-        l--;
-        r--;
-        cout << query(l, r) << "\n";
-    }
-
-    return 0;
-}
-
