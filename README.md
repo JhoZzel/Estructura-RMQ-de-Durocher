@@ -45,3 +45,5 @@ Esta técnica evita el método de los Cuatro Rusos y logra complejidad óptima t
 - [x] Verificación con búsqueda lineal para garantizar correctitud.
 
 ---
+
+[🎥 Ver exposición en YouTube](https://youtu.be/1aiHpoubY14?si=EhuC7DspvGRsql8n)
